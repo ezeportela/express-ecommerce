@@ -2,8 +2,8 @@ const express = require('express'),
       path = require('path'),
       bodyParser = require('body-parser'),
       productsRouter = require('./routes/views/products'),
-      productsApiRouter = require('./routes/api/products')
-      
+      productsApiRouter = require('./routes/api/products'),
+      { config } = require('./config')
 
 // app
 const app = express()
@@ -28,6 +28,6 @@ app.get('/', (req, res) => {
 })
 
 // server
-const server = app.listen(8000, () => {
+const server = app.listen(config.port, () => {
     console.log(`Listening http://localhost:${server.address().port}`);
 })
