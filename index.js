@@ -4,7 +4,9 @@ const express = require('express'),
       productsRouter = require('./routes/views/products'),
       productsApiRouter = require('./routes/api/products'),
       { config } = require('./config'),
-      { logErrors, clientErrorHandler, errorHandler } = require('./utils/middlewares/error-handlers')
+      { logErrors, wrapErrors, clientErrorHandler, errorHandler } = require('./utils/middlewares/error-handlers'),
+      boom = require('boom'),
+      isRequestAjaxOrApi = require('./utils/request-ajax-api.js')
 
 // app
 const app = express()
@@ -28,7 +30,20 @@ app.get('/', (req, res) => {
     res.redirect('/products')
 })
 
+app.use((req, res, next) => {
+  if (isRequestAjaxOrApi(req)) {
+    const {
+      output: { statusCode, payload }
+    } = boom.notFound()
+
+    res.status(statusCode).json(payload)
+  }
+
+  res.status(404).render("404")
+})
+
 app.use(logErrors)
+app.use(wrapErrors)
 app.use(clientErrorHandler)
 app.use(errorHandler)
 
