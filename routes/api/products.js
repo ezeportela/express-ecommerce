@@ -1,9 +1,12 @@
 const express = require('express'),
       ProductsService = require('../../services/products'),
       { productIdSchema, productTagSchema, createProductSchema, updateProductSchema } = require('../../utils/schemas/products'),
-      validation = require('../../utils/middlewares/validation-handlers')
+      validation = require('../../utils/middlewares/validation-handlers'),
+      passport = require('passport')
 
 const router = express.Router()
+
+require('../../utils/auth/strategies/jwt')
 
 const productsService = new ProductsService()
 
@@ -53,7 +56,12 @@ router.post('/', validation(createProductSchema), async (req, res, next) => {
     }
 })
 
-router.put('/:productId', validation({ productId: productIdSchema }, "params"), validation(updateProductSchema), async (req, res, next) => {
+router.put(
+    '/:productId', 
+    passport.authenticate('jwt', { session: false }),
+    validation({ productId: productIdSchema }, 'params'), 
+    validation(updateProductSchema), 
+    async (req, res, next) => {
     const { productId } = req.params
     const { body: product } = req
 
@@ -72,7 +80,10 @@ router.put('/:productId', validation({ productId: productIdSchema }, "params"), 
     }
 })
 
-router.delete('/:productId', async (req, res, next) => {
+router.delete(
+    '/:productId', 
+    passport.authenticate('jwt', { session: false }),
+    async (req, res, next) => {
     const { productId } = req.params
 
     try {
