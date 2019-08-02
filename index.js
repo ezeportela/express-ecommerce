@@ -6,7 +6,8 @@ const express = require('express'),
       { config } = require('./config'),
       { logErrors, wrapErrors, clientErrorHandler, errorHandler } = require('./utils/middlewares/error-handlers'),
       boom = require('boom'),
-      isRequestAjaxOrApi = require('./utils/request-ajax-api.js')
+      isRequestAjaxOrApi = require('./utils/request-ajax-api.js'),
+      authApiRouter = require('./routes/api/auth0')
 
 // app
 const app = express()
@@ -24,6 +25,7 @@ app.set("view engine", "pug")
 // routes
 app.use('/products', productsRouter)
 app.use('/api/products', productsApiRouter)
+app.use("/api/auth", authApiRouter)
 
 // redirect
 app.get('/', (req, res) => {
